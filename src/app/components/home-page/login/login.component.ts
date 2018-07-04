@@ -34,6 +34,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
+		this.authService.logout();
 		this.getUsers();
 	}
 
