@@ -1,0 +1,63 @@
+<div class="container">
+    <h1 class="itemTitulo">Editar Modelo - Garrafas</h1>
+    <form class="itemForm" [formGroup]="GarrafaForm" (ngSubmit)="editarGarrafa(GarrafaForm.value)">
+        <div class="main-registo">
+            <h4>Cuba(/L)</h4>
+            <input type="number" formControlName="cuba" placeholder="Insira aqui o lote...">
+        </div>
+        <div class="alerta" *ngIf="GarrafaForm.controls['cuba'].hasError('required') && GarrafaForm.controls['cuba'].touched">
+            Cuba obrigatória
+        </div>        
+        <div class="alerta" *ngIf="!GarrafaForm.controls['cuba'].hasError('required') && GarrafaForm.controls['cuba'].hasError('min')">
+            Valor tem de ser positivo
+        </div>
+        <br>
+        <div class="main-registo">
+            <h4>Ano</h4>
+            <input type="number" formControlName="ano" placeholder="Insira aqui o ano...">
+        </div>
+        <div class="alerta" *ngIf="GarrafaForm.controls['ano'].hasError('required') && GarrafaForm.controls['ano'].touched">
+            Ano obrigatório
+        </div>        
+        <div class="alerta" *ngIf="!GarrafaForm.controls['ano'].hasError('required') && GarrafaForm.controls['ano'].hasError('min')">
+            Valor tem de ser maior que 1900
+        </div>        
+        <div class="alerta" *ngIf="!GarrafaForm.controls['ano'].hasError('required') && !GarrafaForm.controls['ano'].hasError('min') && GarrafaForm.controls['ano'].hasError('max')">
+            Valor tem de ser menor que 2100
+        </div>
+        <br>
+        <div class="main-registo">
+            <h4>Tipo de Vinho</h4>
+            <select formControlName="tipoVinho">
+                <option value="" disabled>Vinhos</option>
+                <option *ngFor="let vinho of vinhos" [ngValue]="vinho.ID">
+                    Marca: {{vinho.Marca}} | Tipo: {{vinho.Tipo}} {{vinho.Categoria != "" ? ' | Categoria: ' + vinho.Categoria : ''}}
+                </option>
+            </select>
+        </div>
+        <div class="alerta" *ngIf="GarrafaForm.controls['tipoVinho'].hasError('required') && GarrafaForm.controls['tipoVinho'].touched">
+            Tipo de Vinho obrigatório
+        </div>
+        <br>
+        <div class="main-registo">
+            <h4>Capacidade(/L)</h4>
+            <select formControlName="capacidade">
+                <option value="" disabled>Capacidades(L)</option>
+                <option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+            </select>
+        </div>
+        <div class="alerta" *ngIf="GarrafaForm.controls['capacidade'].hasError('required') && GarrafaForm.controls['capacidade'].touched">
+            Capacidade obrigatória
+        </div>
+        <br>        
+        <div class="alerta" *ngIf="!GarrafaForm.controls['capacidade'].hasError('required') && !GarrafaForm.controls['cuba'].hasError('required') && !GarrafaForm.controls['cuba'].hasError('min') && !GarrafaForm.controls['ano'].hasError('required') && !GarrafaForm.controls['ano'].hasError('min') && !GarrafaForm.controls['ano'].hasError('max') && !GarrafaForm.controls['tipoVinho'].hasError('required') && GarrafaForm.hasError('ValidatorModelo')">
+            O modelo que quer inserir já existe ou inalterado
+        </div>
+        <br>  
+        <div class="registo-btn">
+            <button type="submit" name="button" class="btn" [disabled]="!GarrafaForm.valid">Editar Modelo</button>
+            <a class="btn" (click)="clearDados()">Limpar</a>
+        </div>
+        <br>
+    </form>
+</div>

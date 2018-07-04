@@ -1,0 +1,128 @@
+<div class="container">
+	<h1 class="itemTitulo">Novo Registo - Caixas</h1>
+	<h4>Modelos de Caixa Existentes</h4>
+	<form [formGroup]="FiltroForm" (ngSubmit)="pesquisaMarca(FiltroForm.value)">
+        <div class="itemNav">
+            <select formControlName="material" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+                <option [ngValue]="0">Material</option>
+                <option *ngFor="let material of materiais" [ngValue]="material">{{material}}</option>
+            </select>
+        	<select formControlName="capacidade" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+            	<option [ngValue]="0">Capacidade</option>
+                <option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+            </select>
+            <select formControlName="tipoVinho" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+                <option [ngValue]="0">Tipo de Vinho</option>
+                <option *ngFor="let tipoVinho of tipoVinhos" [ngValue]="tipoVinho">{{tipoVinho}}</option>
+            </select>
+            <select formControlName="categoria" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+                <option [ngValue]="0">Categoria</option>
+                <option value="Normal">S/Categoria</option>
+                <option *ngFor="let categoria of categorias" [ngValue]="categoria">{{categoria}}</option>
+            </select>
+            <input class="itemInput" type="text" formControlName="marca" placeholder="Insira aqui o nome da marca de vinho a pesquisar...">
+            <button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>                
+            <a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+        </div>
+    </form>
+	<div class="main-table" *ngIf="estadoTabela && caixasEVinhos.length > 0">
+		<table>
+			<tr>
+				<th>MODELO</th>				
+				<th>MARCA</th>
+				<th>TIPO DE VINHO</th>
+				<th>MATERIAL</th>
+				<th>GARRAFAS(QNT)</th>
+				<th>CAPACIDADE(/L)</th>
+			</tr>
+			<tr *ngFor="let caixas of caixasEVinhos | paginate: { id: 'caixas', itemsPerPage: 10, currentPage: p }">
+				<td>{{caixas.ID}}</td>
+				<td>{{caixas.Marca}}</td>
+				<td>{{caixas.Tipo}} {{caixas.Categoria != "" ? ' - ' + caixas.Categoria : ''}}</td>
+				<td>{{caixas.Material}}</td>
+				<td>{{caixas.NGarrafas}}</td>
+				<td>{{caixas.CapacidadeGarrafa}}</td>
+			</tr>
+		</table>
+	</div>
+    <pagination-controls *ngIf="estadoTabela" class="pagination" id="caixas" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>       
+	<div *ngIf="caixasEVinhos.length == 0" style="text-align: center;">
+		<h2 style="color: #8B0000;">Não existem modelos de caixa no sistema!</h2>
+  	</div>  
+	<div *ngIf="!estadoTabela && caixasEVinhos.length > 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não foram encontrados nenhuns registos de caixa com o filtro selecionado!</h2>
+    </div>
+	<br>
+	<form class="itemForm" [formGroup]="RegistoForm">
+		<div class="main-registo">
+			<h4>Modelo</h4>
+			<select formControlName="idCaixa">
+				<option value="" disabled>Modelo de Caixa</option>
+				<option *ngFor="let caixa of caixasEVinhos" [ngValue]="caixa.ID"> {{caixa.ID}} </option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['idCaixa'].valid && RegistoForm.controls['idCaixa'].touched">
+			Selecione um dos modelos
+		</div>
+		<br>		
+		<div class="main-registo">
+			<h4>Comentário</h4>
+			<input type="text" formControlName="comentario" placeholder="Insira aqui um comentário acerca do registo (opcional)...">
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['comentario'].valid && RegistoForm.controls['comentario'].touched">
+			Máx. 200 Caracteres
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Operação</h4>
+			<select formControlName="opcao" (change)="onChange($event.target.value)">
+				<option value="" disabled>Operações Disponiveis</option>
+				<option value="Inserir">Inserir</option>
+				<option value="Remover">Remover</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['opcao'].valid && RegistoForm.controls['opcao'].touched">
+			Operação obrigatória
+		</div>
+		<br>
+		<form class="itemForm" [formGroup]="InserirForm" *ngIf="inserirSelecionado" (ngSubmit)="novoRegisto(InserirForm.value)">
+			<div class="main-registo">
+				<h4>Quantidade</h4>
+				<input type="number" formControlName="quantidade" placeholder="Insira aqui a quantidade do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="InserirForm.controls['quantidade'].hasError('required') && InserirForm.controls['quantidade'].touched">
+				Quantidade obrigatória
+			</div>
+			<div class="alerta" *ngIf="!InserirForm.controls['quantidade'].hasError('required') && InserirForm.controls['quantidade'].hasError('min')">
+				Quantidade tem de ser positiva
+			</div>
+			<br>     
+			<div class="registo-btn">
+				<button type="submit" name="button" class="btn" [disabled]="getEstadoForm()">Inserir</button>
+				<a class="btn" (click)="clearDados()">Limpar</a>
+			</div>
+			<br>
+		</form>
+		<form class="itemForm" [formGroup]="RemoverForm" *ngIf="removerSelecionado" (ngSubmit)="novoRegisto(RemoverForm.value)">
+			<div class="main-registo">
+				<h4>Quantidade</h4>
+				<input type="number" formControlName="quantidade" placeholder="Insira aqui a quantidade do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="RemoverForm.controls['quantidade'].hasError('required') && RemoverForm.controls['quantidade'].touched">
+				Quantidade obrigatória
+			</div>
+			<div class="alerta" *ngIf="!RemoverForm.controls['quantidade'].hasError('required') && RemoverForm.controls['quantidade'].hasError('min')">
+				Quantidade tem de ser positiva
+			</div>
+			<div class="alerta" *ngIf="!RemoverForm.controls['quantidade'].hasError('required') && !RemoverForm.controls['quantidade'].hasError('min') && RemoverForm.controls['quantidade'].hasError('ValidRemoverCaixa')">
+				Não existem, em stock, a quantidade que pretende remover
+			</div>
+			<br>     
+			<div class="registo-btn">
+				<button type="submit" name="button" class="btn" [disabled]="getEstadoForm()">Remover</button>
+				<a class="btn" (click)="clearDados()">Limpar</a>
+			</div>
+			<br>
+		</form>
+	</form>
+</div>

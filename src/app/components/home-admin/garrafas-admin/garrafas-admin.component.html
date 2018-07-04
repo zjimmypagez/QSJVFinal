@@ -1,0 +1,64 @@
+<div class="container">
+   <h1 class="itemTitulo">Modelos - Garrafas</h1>
+   <form [formGroup]="FiltroForm" (ngSubmit)="pesquisaMarca(FiltroForm.value)">
+      <div class="itemNav">
+          <div class="inserir">
+              <a routerLink="/admin/garrafas/inserir" class="btn">Novo Modelo</a>
+          </div>
+          <div class="filtros">
+              <select class="itemAno" formControlName="ano" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                  <option [ngValue]="0">Ano</option>
+                  <option *ngFor="let ano of anos" [ngValue]="ano">{{ano}}</option>
+                </select>
+                <select class="itemCapacidade" formControlName="capacidade" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Capacidade</option>
+                    <option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+                </select>
+                <select class="itemVinho" formControlName="tipoVinho" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Tipo de Vinho</option>
+                    <option *ngFor="let tipoVinho of tipoVinhos" [ngValue]="tipoVinho">{{tipoVinho}}</option>
+                </select>
+                <select class="itemCategoria" formControlName="categoria" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Categoria</option>
+                    <option value="Normal">S/Categoria</option>
+                    <option *ngFor="let categoria of categorias" [ngValue]="categoria">{{categoria}}</option>
+                </select>
+                <a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+                <input class="itemInput" type="text" formControlName="marca" placeholder="Insira aqui o nome da marca de vinho a pesquisar...">
+                <button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>
+            </div>
+      </div>
+   </form>
+   <div class="main-table" *ngIf="estadoTabela && garrafasEVinhos.length > 0">
+      <table>
+         <tr>
+            <th>LOTE</th>
+            <th>TIPO VINHO</th>
+            <th>CAPACIDADE(/L)</th>
+            <th>C/RÓTULO</th>
+            <th>S/RÓTULO</th>
+            <th>AÇÕES</th>
+         </tr>
+         <tr *ngFor="let garrafas of garrafasEVinhos | paginate: { id: 'garrafas', itemsPerPage: 10, currentPage: p }">
+            <td>{{garrafas.Marca}}-{{garrafas.Ano}}{{garrafas.Pipa != 0 ? '-' + garrafas.Pipa : ''}}</td>
+            <td>{{garrafas.Tipo}} {{garrafas.Categoria != "" ? ' - ' + garrafas.Categoria : ''}}</td>
+            <td>{{garrafas.Capacidade}} l</td>
+            <td>{{garrafas.CRotulo}}</td>
+            <td>{{garrafas.SRotulo}}</td>
+            <td>
+               <div class="action-btn">
+                  <a class="btn" (click)="editarGarrafa(garrafas.Id)">Editar</a>
+                  <a class="btn" (click)="eliminarGarrafa(garrafas.Id)">Eliminar</a>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+   <pagination-controls *ngIf="estadoTabela" class="pagination" id="garrafas" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>   
+   <div *ngIf="garrafasEVinhos.length == 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não existem modelos de garrafa no sistema!</h2>
+    </div>  
+   <div *ngIf="!estadoTabela && garrafasEVinhos.length > 0" style="text-align: center;">
+      <h2 style="color: #8B0000;">Não foram encontrados nenhuns modelos de garrafa com filtro selecionado!</h2>
+   </div>
+</div>

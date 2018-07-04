@@ -1,0 +1,160 @@
+<div class="container">
+   <h1 class="itemTitulo">Novo Registo - Garrafas</h1>
+   <h4>Modelos de Garrafa Existentes</h4>
+   <form [formGroup]="FiltroForm" (ngSubmit)="pesquisaMarca(FiltroForm.value)">
+	<div class="itemNav">
+		<select formControlName="ano" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+			<option [ngValue]="0">Ano</option>
+			<option *ngFor="let ano of anos" [ngValue]="ano">{{ano}}</option>
+		  </select>
+		  <select formControlName="capacidade" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+			  <option [ngValue]="0">Capacidade</option>
+			  <option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+		  </select>
+		  <select formControlName="tipoVinho" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+			  <option [ngValue]="0">Tipo de Vinho</option>
+			  <option *ngFor="let tipoVinho of tipoVinhos" [ngValue]="tipoVinho">{{tipoVinho}}</option>
+		  </select>
+		  <select formControlName="categoria" (change)="onChangeFiltro()" style="background: #eaeaae; color: #27270c;">
+			  <option [ngValue]="0">Categoria</option>
+			  <option value="Normal">S/Categoria</option>
+			  <option *ngFor="let categoria of categorias" [ngValue]="categoria">{{categoria}}</option>
+		  </select>
+		<input class="itemInput" type="text" formControlName="marca" placeholder="Insira aqui o nome da marca de vinho a pesquisar...">
+		<button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>                
+		<a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+	</div>
+	</form>
+   <div class="main-table" *ngIf="estadoTabela && garrafasEVinhos.length > 0">
+      <table>
+         <tr>
+            <th>MODELO</th>
+            <th>LOTE</th>
+            <th>TIPO DE VINHO</th>
+            <th>CAPACIDADE(/L)</th>
+         </tr>
+         <tr *ngFor="let garrafas of garrafasEVinhos | paginate: { id: 'garrafas', itemsPerPage: 10, currentPage: p }">
+            <td>{{garrafas.Id}}</td>
+            <td>{{garrafas.Marca}}-{{garrafas.Ano}}{{garrafas.Pipa != 0 ? '-' + garrafas.Pipa : ''}}</td>
+            <td>{{garrafas.Tipo}} {{garrafas.Categoria != "" ? ' - ' + garrafas.Categoria : ''}}</td>
+            <td>{{garrafas.Capacidade}} l</td>
+         </tr>
+      </table>
+   </div>
+   <pagination-controls *ngIf="estadoTabela" class="pagination" id="garrafas" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>
+	<div *ngIf="garrafasEVinhos.length == 0" style="text-align: center;">
+		<h2 style="color: #8B0000;">Não existem modelos de garrafa no sistema!</h2>
+  </div>  
+	<div *ngIf="!estadoTabela && garrafasEVinhos.length > 0" style="text-align: center;">
+	   <h2 style="color: #8B0000;">Não foram encontrados nenhuns registos de garrafa com as opções indicadas!</h2>
+   </div>
+   <br>
+   <form class="itemForm" [formGroup]="RegistoForm">
+		<div class="main-registo">
+			<h4>Modelo</h4>
+			<select formControlName="idGarrafa">
+				<option value="" disabled>Modelo de Garrafa</option>
+				<option *ngFor="let garrafa of garrafasEVinhos" [ngValue]="garrafa.Id">{{garrafa.Id}}</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['idGarrafa'].valid && RegistoForm.controls['idGarrafa'].touched">
+			Selecione um dos modelos
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Comentário</h4>
+			<input type="text" formControlName="comentario" placeholder="Insira aqui um comentário acerca do registo (opcional)...">
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['comentario'].valid && RegistoForm.controls['comentario'].touched">
+			Máx. 200 Caracteres
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Operação</h4>
+			<select formControlName="opcao" (change)="onChange($event.target.value)">
+				<option value="" disabled>Operações Disponiveis</option>
+				<option value="Inserir">Inserir C/Rótulo ou S/Rótulo</option>
+				<option value="Remover">Remover C/Rótulo ou S/Rótulo</option>
+				<option value="Rotular">Rotular Garrafas</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="!RegistoForm.controls['opcao'].valid && RegistoForm.controls['opcao'].touched">
+			Selecione uma das operações
+		</div>
+		<br>
+		<form class="itemForm" [formGroup]="InserirForm" *ngIf="inserirSelecionado" (ngSubmit)="novoRegisto(InserirForm.value)">
+			<div class="main-registo">
+				<h4>C/Rotulo</h4>
+				<input type="number" formControlName="cRotulo" placeholder="Insira aqui a quantidade de garrafas com rótulo do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="InserirForm.controls['cRotulo'].hasError('min') && InserirForm.controls['cRotulo'].touched">
+				Quantidade tem de ser positiva
+			</div>
+			<br> 
+			<div class="main-registo">
+				<h4>S/Rotulo</h4>
+				<input type="number" formControlName="sRotulo" placeholder="Insira aqui a quantidade de garrafas sem rótulo do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="InserirForm.controls['sRotulo'].hasError('min') && InserirForm.controls['sRotulo'].touched">
+				Quantidade tem de ser positiva
+			</div>
+			<br>		
+			<div class="alerta" *ngIf="!InserirForm.controls['cRotulo'].hasError('min') && !InserirForm.controls['sRotulo'].hasError('min') && InserirForm.hasError('ValidGarrafa') && InserirForm.touched">
+				Insira quantidade em pelo menos um dos tipo de garrafa
+			</div>		
+			<div class="registo-btn">
+				<button type="submit" name="button" class="btn" [disabled]="getEstadoForm()">Inserir</button>
+				<a class="btn" (click)="clearDados()">Limpar</a>
+			</div>
+		</form>
+		<form class="itemForm" [formGroup]="RemoverForm" *ngIf="removerSelecionado" (ngSubmit)="novoRegisto(RemoverForm.value)">
+			<div class="main-registo">
+				<h4>C/Rotulo</h4>
+				<input type="number" formControlName="cRotulo" placeholder="Insira aqui a quantidade de garrafas com rótulo do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="RemoverForm.controls['cRotulo'].hasError('min') && RemoverForm.controls['cRotulo'].touched">
+				Quantidade tem de ser positiva
+			</div>						
+			<div class="alerta" *ngIf="!RemoverForm.controls['cRotulo'].hasError('min') && RemoverForm.controls['cRotulo'].hasError('ValidRemoverCRotulo')">
+				Não existem, em stock, as garrafas que indicou para remover
+			</div>
+			<br> 
+			<div class="main-registo">
+				<h4>S/Rotulo</h4>
+				<input type="number" formControlName="sRotulo" placeholder="Insira aqui a quantidade de garrafas sem rótulo do modelo selecionado...">
+			</div>
+			<div class="alerta" *ngIf="RemoverForm.controls['sRotulo'].hasError('min') && RemoverForm.controls['sRotulo'].touched">
+				Quantidade tem de ser positiva
+			</div>						
+			<div class="alerta" *ngIf="!RemoverForm.controls['sRotulo'].hasError('min') && RemoverForm.controls['sRotulo'].hasError('ValidRemoverSRotulo')">
+				Não existem, em stock, as garrafas que indicou para remover
+			</div>
+			<br>		
+			<div class="alerta" *ngIf="!RemoverForm.controls['cRotulo'].hasError('min') && !RemoverForm.controls['sRotulo'].hasError('min') && RemoverForm.hasError('ValidGarrafa') && RemoverForm.touched">
+				Insira quantidade em pelo menos um dos tipo de garrafa
+			</div>	
+			<div class="registo-btn">
+				<button type="submit" name="button" class="btn" [disabled]="getEstadoForm()">Remover</button>
+				<a class="btn" (click)="clearDados()">Limpar</a>
+			</div>
+		</form>
+		<form class="itemForm" [formGroup]="RotularForm" *ngIf="rotularSelecionado" (ngSubmit)="novoRegisto(RotularForm.value)">
+			<div class="main-registo">
+				<h4>Rotular Quantidade</h4>
+				<input type="number" formControlName="sRotulo" placeholder="Insira aqui a quantidade de garrafas sem rótulo que quer rotular...">
+			</div>
+			<div class="alerta" *ngIf="RotularForm.controls['sRotulo'].hasError('min') && RotularForm.controls['sRotulo'].touched">
+				Quantidade tem de ser positiva
+			</div>						
+			<div class="alerta" *ngIf="!RotularForm.controls['sRotulo'].hasError('min') && RotularForm.controls['sRotulo'].hasError('ValidRemoverSRotulo')">
+				Não existem, em stock, as garrafas que indicou para rotular
+			</div>
+			<br>
+			<div class="registo-btn">
+				<button type="submit" name="button" class="btn" [disabled]="getEstadoForm()">Rotular</button>
+				<a class="btn" (click)="clearDados()">Limpar</a>
+			</div>
+		</form>
+		<br> 
+   </form>
+</div>

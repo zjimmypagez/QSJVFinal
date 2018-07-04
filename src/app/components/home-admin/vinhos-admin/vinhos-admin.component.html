@@ -1,0 +1,52 @@
+<div class="container">
+    <h1 class="itemTitulo">Tipos - Vinhos</h1>
+    <form [formGroup]="FiltroForm" (ngSubmit)="pesquisaMarca(FiltroForm.value)">
+      <div class="itemNav">
+          <div class="inserir">
+              <a routerLink="/admin/vinhos/inserir" class="btn">Novo Tipo</a>
+          </div>
+          <div class="filtros">
+              <select class="itemTipo" formControlName="tipoVinho" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                 <option [ngValue]="0">Tipo</option>
+                 <option *ngFor="let vinho of tipoVinhos" [ngValue]="vinho">{{vinho}}</option>
+              </select>
+              <select class="itemCategoria" formControlName="categoria" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                 <option [ngValue]="0">Categoria</option>
+                 <option value="Normal">S/Categoria</option>
+                 <option *ngFor="let categoria of categorias" [ngValue]="categoria">{{categoria}}</option>
+              </select>
+              <a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+              <input class="itemInput" type="text" formControlName="marca" placeholder="Insira aqui o nome da marca de vinho a pesquisar...">
+              <button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>
+        </div>
+      </div>
+   </form>
+    <div class="main-table" *ngIf="estadoTabela && vinhos.length > 0">
+       <table>
+          <tr>
+             <th>MARCA</th>
+             <th>TIPO VINHO</th>
+             <th>CATEGORIA</th>
+             <th>AÇÕES</th>
+          </tr>
+          <tr *ngFor="let vinho of vinhos | paginate: { id: 'vinhos', itemsPerPage: 10, currentPage: p }">
+             <td>{{vinho.Marca}}</td>
+             <td>{{vinho.Tipo}}</td>
+             <td>{{vinho.Categoria}}</td>
+             <td>
+                <div class="action-btn">
+                   <a class="btn" (click)="editarVinho(vinho.ID)">Editar</a>
+                   <a class="btn" (click)="eliminarVinho(vinho.ID)">Eliminar</a>
+                </div>
+             </td>
+          </tr>
+       </table>
+    </div>
+    <pagination-controls *ngIf="estadoTabela" class="pagination" id="vinhos" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>   
+    <div *ngIf="vinhos.length == 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não existem vinhos no sistema!</h2>
+    </div>
+    <div *ngIf="!estadoTabela && vinhos.length > 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não foram encontrados nenhuns registos de vinhos com as opções indicadas!</h2>
+    </div>
+</div>

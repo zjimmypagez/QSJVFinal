@@ -1,0 +1,92 @@
+<div class="container" *ngIf="encomenda">
+	<h1 class="itemTitulo">Ver Registo - Encomendas</h1>
+	<div>
+		<h4><strong>Data de Registo</strong><h4 style="text-transform: none; font-size: 0.6rem;">{{encomenda._Data.slice(0, 19).replace('T', ' ')}}</h4></h4>
+		<h4 *ngIf="encomenda.DataEntrega != null"><strong>Data de Entrega</strong><h4 style="text-transform: none; font-size: 0.6rem;">{{encomenda.DataEntrega.slice(0, 19).replace('T', ' ')}}</h4></h4>
+		<h4 *ngIf="encomenda.NFatura != ''"><strong>Nº Fatura</strong><h4 style="text-transform: none; font-size: 0.6rem;">{{encomenda.NFatura}}</h4></h4>
+		<h4 *ngIf="encomenda.Comentario != ''"><strong>Comentário</strong><h4 style="text-transform: none; font-size: 0.6rem;">{{encomenda.Comentario}}</h4></h4>
+		<br>
+	</div>
+  <h4 *ngIf="encomendaTipoCaixaNormais.length > 0">Caixas Normais Encomendadas</h4>
+	<div class="main-table" *ngIf="encomendaTipoCaixaNormais.length > 0">
+	  <table>
+		  <tr>
+				<th>MARCA</th>
+				<th>TIPO VINHO</th>
+				<th>MATERIAL</th>
+				<th>GARRAFAS(QNT)</th>
+				<th>CAPACIDADE(/L)</th>
+        <th>ANO</th>
+        <th>CUBA</th>
+        <th>QUANTIDADE CAIXAS</th>
+        <th>QUANTIDADE GARRAFAS</th>
+			</tr>
+			<tr *ngFor="let normais of encomendaTipoCaixaNormais | paginate: { id: 'caixasNormal', itemsPerPage: 10, currentPage: p }">
+				<td>{{normais.Marca}}</td>
+				<td>{{normais.Tipo}} {{normais.Categoria != "" ? ' - ' + normais.Categoria : ''}}</td>
+				<td>{{normais.Material}}</td>
+				<td>{{normais.NGarrafas}}</td>
+				<td>{{normais.CapacidadeGarrafa}} l</td>
+				<td>{{normais.Ano}}</td>
+				<td>{{normais.Pipa}}</td>
+        <td>{{normais.QuantidadeCaixa}}</td>
+				<td>{{normais.Quantidade * normais.QuantidadeCaixa}}</td>
+			</tr>
+		</table>
+	</div>
+  <pagination-controls *ngIf="encomendaTipoCaixaNormais.length != 0" class="pagination" id="caixasNormal" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>  
+  <br>
+  <h4 *ngIf="encomendaTipoCaixaEspeciais.length > 0">Caixas Especiais Encomendadas</h4>
+	<div class="main-table" *ngIf="encomendaTipoCaixaEspeciais.length > 0">
+	  <table>
+		  <tr>
+				<th>MARCA</th>
+				<th>TIPO VINHO</th>
+				<th>MATERIAL</th>
+				<th>GARRAFAS(QNT)</th>
+				<th>CAPACIDADE(/L)</th>
+        <th>ANO</th>
+        <th>CUBA</th>
+        <th>QUANTIDADE CAIXAS</th>
+        <th>QUANTIADDE GARRAFAS</th>
+			</tr>
+			<tr *ngFor="let especiais of encomendaTipoCaixaEspeciais | paginate: { id: 'caixasEspeciais', itemsPerPage: 10, currentPage: p }">
+				<td>{{especiais.Marca}}</td>
+				<td>{{especiais.Tipo}} {{especiais.Categoria != "" ? ' - ' + especiais.Categoria : ''}}</td>
+				<td>{{especiais.Material}}</td>
+				<td>{{especiais.NGarrafas}}</td>
+				<td>{{especiais.CapacidadeGarrafa}} l</td>
+				<td>{{especiais.Ano}}</td>
+				<td>{{especiais.Pipa}}</td>
+        <td>{{especiais.QuantidadeCaixa}}</td>
+				<td>{{especiais.Quantidade * especiais.QuantidadeCaixa}}</td>
+			</tr>
+		</table>
+	</div>
+  <pagination-controls *ngIf="encomendaTipoCaixaEspeciais.length != 0" class="pagination" id="caixasEspeciais" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>            	
+	<div *ngIf="entregarE">
+			<form class="itemForm" [formGroup]="DadosEncomendaForm">
+					<div class="main-registo">
+						<h4>Nº Fatura</h4>
+						<input type="text" formControlName="nFatura" placeholder="Insira aqui o número da fatura da encomenda...">
+					</div>
+					<div class="alerta" *ngIf="!DadosEncomendaForm.controls['nFatura'].valid && DadosEncomendaForm.controls['nFatura'].touched">
+						Nº Fatura obrigatório (Valores só positivos)
+					</div>
+					<br>     
+					<div class="main-registo">
+						<h4>Comentário</h4>
+						<input type="text" formControlName="comentario" placeholder="Insira aqui um comentário acerca do registo (opcional)...">
+					</div>
+					<div class="alerta" *ngIf="!DadosEncomendaForm.controls['comentario'].valid && DadosEncomendaForm.controls['comentario'].touched">
+						Máx. 200 Caracteres
+					</div>	
+			</form>
+	</div>
+	<div style="margin: 10px 0 10px 0;"></div>
+		<div class="registo-btn" *ngIf="!encomenda.Estado">
+			<a class="btn" (click)="entregarEncomenda()">Entregar</a>
+			<a class="btn" (click)="eliminarEncomenda()">Eliminar</a>
+		</div>
+		<br>
+ </div>

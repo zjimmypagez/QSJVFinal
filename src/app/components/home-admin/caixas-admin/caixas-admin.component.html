@@ -1,0 +1,66 @@
+<div class="container">
+    <h1 class="itemTitulo">Modelos - Caixas</h1>
+    <form [formGroup]="FiltroForm" (ngSubmit)="pesquisaMarca(FiltroForm.value)">
+        <div class="itemNav">
+            <div class="inserir">
+                <a routerLink="/admin/caixas/inserir" class="btn">Novo Modelo</a>
+            </div>
+            <div class="filtros">
+                <select class="itemMaterial" formControlName="material" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Material</option>
+                    <option *ngFor="let material of materiais" [ngValue]="material">{{material}}</option>
+                </select>
+                <select class="itemCapacidade" formControlName="capacidade" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Capacidade</option>
+                    <option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+                </select>
+                <select class="itemVinho" formControlName="tipoVinho" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Tipo de Vinho</option>
+                    <option *ngFor="let tipoVinho of tipoVinhos" [ngValue]="tipoVinho">{{tipoVinho}}</option>
+                </select>
+                <select class="itemCategoria" formControlName="categoria" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+                    <option [ngValue]="0">Categoria</option>
+                    <option value="Normal">S/Categoria</option>
+                    <option *ngFor="let categoria of categorias" [ngValue]="categoria">{{categoria}}</option>
+                </select>
+                <a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+                <input class="itemInput" type="text" formControlName="marca" placeholder="Insira aqui o nome da marca de vinho a pesquisar...">
+                <button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>
+            </div>
+        </div>
+    </form>
+    <div class="main-table" *ngIf="estadoTabela && caixasEVinhos.length > 0">
+       <table>
+          <tr>
+             <th>MARCA</th>
+             <th>TIPO VINHO</th>
+             <th>MATERIAL</th>
+             <th>GARRAFAS(QNT)</th>
+             <th>CAPACIDADE(/L)</th>
+             <th>QUANTIDADE</th>
+             <th>AÇÕES</th>
+          </tr>
+          <tr *ngFor="let caixas of caixasEVinhos | paginate: { id: 'caixas', itemsPerPage: 10, currentPage: p }">
+             <td>{{caixas.Marca}}</td>
+             <td>{{caixas.Tipo}} {{caixas.Categoria != "" ? ' - ' + caixas.Categoria : ''}}</td>
+             <td>{{caixas.Material}}</td>
+             <td>{{caixas.NGarrafas}}</td>
+             <td>{{caixas.CapacidadeGarrafa}} l</td>
+             <td>{{caixas.Stock}}</td>
+             <td>
+                <div class="action-btn">
+                   <a class="btn" (click)="editarCaixa(caixas.ID)">Editar</a>
+                   <a class="btn" (click)="eliminarCaixa(caixas.ID)">Eliminar</a>
+                </div>
+             </td>
+          </tr>      
+       </table>
+    </div>
+    <pagination-controls *ngIf="estadoTabela" class="pagination" id="caixas" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>   
+    <div *ngIf="caixasEVinhos.length == 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não existem modelos de caixa no sistema!</h2>
+    </div>
+    <div *ngIf="!estadoTabela && caixasEVinhos.length > 0" style="text-align: center;">
+        <h2 style="color: #8B0000;">Não foram encontrados nenhuns modelos de caixa com o filtro selecionado!</h2>
+    </div>
+</div>   

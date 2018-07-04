@@ -1,0 +1,57 @@
+<div class="container">
+  <h1 class="itemTitulo">Registo - Encomendas</h1>
+  <form [formGroup]="FiltroForm" (ngSubmit)="filtrar(FiltroForm.value)">
+    <div class="itemNav">
+      <div class="inserir">
+        <a routerLink="/func/encomendas/inserir" class="btn">Inserir Encomenda</a>
+      </div>
+      <div class="filtros">
+          <select class="itemEstado" formControlName="estado" (change)="onChange()" style="background: #eaeaae; color: #27270c;">
+             <option [ngValue]="0">Todas</option>
+             <option value="EmEspera">Em Espera</option>
+             <option value="Entregue">Entregue</option>
+         </select>
+        <input class="itemInput" type="text" formControlName="nFatura" placeholder="Insira aqui o número de fatura a pesquisar...">
+        <button type="submit" class="itemBtn" style="font-size: 11px;" [disabled]="!FiltroForm.valid">Pesquisar</button>
+        <a class="itemClear" (click)="clearTabela()" style="font-size: 11px;">Limpar Pesquisa</a>
+      </div>
+    </div>
+  </form>
+  <div class="main-table" *ngIf="estadoTabela && encomendasEUser.length > 0">
+      <table>
+        <tr>
+          <th>FUNCIONÁRIO</th>
+          <th>Nº FATURA</th>
+          <th>DATA REGISTO</th>
+          <th>DATA ENTREGA</th>
+          <th>COMENTÁRIO</th>
+          <th>ESTADO</th>
+          <th>AÇÕES</th>
+       </tr>
+       <tr *ngFor="let encomendas of encomendasEUser | paginate: { id: 'encomendas', itemsPerPage: 10, currentPage: p }">
+        <td>{{encomendas.Username}}</td>
+        <td>{{encomendas.NFatura}}</td>
+        <td>{{encomendas._Data.slice(0, 19).replace('T', ' ')}}</td>
+        <td>{{encomendas.DataEntrega != null ? encomendas.DataEntrega.slice(0, 19).replace('T', ' ') : ''}}</td>
+        <td>{{encomendas.Comentario}}</td>
+        <td>{{encomendas.Estado == 1 ? "Entregue" : "Em Espera"}}</td>
+        <td>
+          <div class="encomenda-action-btn" *ngIf="encomendas.Estado == 0">
+            <a class="btn" (click)="verEncomenda(encomendas.Id)">Ver</a>
+            <a class="btn" (click)="eliminarEncomenda(encomendas.Id)">Eliminar</a>
+          </div>
+          <div class="action-btn" *ngIf="encomendas.Estado == 1">
+            <a class="btn" (click)="verEncomenda(encomendas.Id)">Ver</a>
+         </div>
+        </td>
+       </tr>
+      </table>
+  </div>
+  <pagination-controls *ngIf="estadoTabela" class="pagination" id="encomendas" (pageChange)="p = $event" max-size="5" autoHide="true" previousLabel="ANTERIOR" nextLabel="PRÓXIMA"></pagination-controls>   
+  <div *ngIf="encomendasEUser.length == 0" style="text-align: center;">
+    <h2 style="color: #8B0000;">Não existem encomendas no sistema!</h2>
+  </div>
+  <div *ngIf="!estadoTabela && encomendasEUser.length > 0" style="text-align: center;">
+      <h2 style="color: #8B0000;">Não foram encontrados nenhuns registo de encomenda com o filtro selecionado!</h2>
+  </div>
+</div>

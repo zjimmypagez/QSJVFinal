@@ -1,0 +1,44 @@
+<div class="container">
+	<h1 class="itemTitulo">Novo Tipo - Vinhos</h1>
+	<form class="itemForm" [formGroup]="VinhoForm" (ngSubmit)="novoVinho(VinhoForm.value)">
+		<div class="main-registo">
+			<h4>Marca</h4>
+			<input type="text" formControlName="marca" placeholder="Insira aqui a marca do vinho...">
+		</div>
+		<div class="alerta" *ngIf="VinhoForm.controls['marca'].hasError('required') && VinhoForm.controls['marca'].touched">
+			Marca obrigatória
+		</div>
+		<div class="alerta" *ngIf="!VinhoForm.controls['marca'].hasError('required') && VinhoForm.controls['marca'].hasError('minlength')">
+			Mín. 5 Caracteres
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Tipo do Vinho</h4>
+			<select formControlName="tipo">
+                <option value="" disabled>Tipo Vinhos</option>
+                <option *ngFor="let tipoVinho of tipoVinhos" [ngValue]="tipoVinho">{{tipoVinho}}</option>
+            </select>
+		</div>
+		<div class="alerta" *ngIf="VinhoForm.controls['tipo'].hasError('required') && VinhoForm.controls['tipo'].touched">
+			Tipo obrigatório
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Categoria</h4>
+			<input type="text" formControlName="categoria" placeholder="Insira aqui a categoria do vinho...">
+		</div>
+		<div class="alerta" *ngIf="VinhoForm.controls['categoria'].hasError('minlength')">
+			Mín. 5 caracteres
+		</div>
+		<br>		
+		<div class="alerta" *ngIf="!VinhoForm.controls['marca'].hasError('required') && !VinhoForm.controls['marca'].hasError('minlength') && !VinhoForm.controls['tipo'].hasError('required') && !VinhoForm.controls['categoria'].hasError('minlength') && VinhoForm.hasError('ValidatorExisteVinho')">
+			O vinho que pretende inserir já existe ou inalterado
+		</div>
+		<br>
+		<div class="registo-btn">
+			<button type="submit" name="button" class="btn" [disabled]="!VinhoForm.valid">Novo Tipo</button>
+			<a class="btn" (click)="clearDados()">Limpar</a>
+		</div>
+		<br>
+	</form>
+</div>

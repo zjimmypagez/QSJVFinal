@@ -1,0 +1,60 @@
+<div class="container">
+	<h1 class="itemTitulo">Editar Modelo - Caixa</h1>
+	<form class="itemForm" [formGroup]="CaixaForm" (ngSubmit)="editarCaixa(CaixaForm.value)">
+		<div class="main-registo">
+			<h4>Capacidade Garrafas(/L)</h4>
+			<select formControlName="capacidade">
+				<option value="" disabled>Capacidades(L)</option>
+				<option *ngFor="let capacidade of capacidades" [ngValue]="capacidade">{{capacidade}}</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="CaixaForm.controls['capacidade'].hasError('required') && CaixaForm.controls['capacidade'].touched">
+			Capacidade obrigatória
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Material</h4>
+			<select formControlName="material" (ngModelChange)="onChange($event)">
+				<option value="" disabled>Materiais</option>
+				<option *ngFor="let material of materiais" [ngValue]="material">{{material}}</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="CaixaForm.controls['material'].hasError('required') && CaixaForm.controls['material'].touched">
+			Material obrigatório
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Quantidade Garrafas</h4>
+			<select formControlName="garrafas">
+				<option value="" disabled>Garrafas</option>
+				<option *ngFor="let garrafa of garrafas" [ngValue]="garrafa">{{garrafa}}</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="CaixaForm.controls['garrafas'].hasError('required') && CaixaForm.controls['garrafas'].touched">
+			Quantidade obrigatória (Selecione um material)
+		</div>
+		<br>
+		<div class="main-registo">
+			<h4>Tipo de Vinho</h4>
+			<select formControlName="tipoVinho">
+				<option value="" disabled>Vinhos</option>
+				<option *ngFor="let vinho of vinhos" [ngValue]="vinho.ID">
+					Marca: {{vinho.Marca}} | Tipo: {{vinho.Tipo}} {{vinho.Categoria != "" ? ' | Categoria: ' + vinho.Categoria : ''}}
+				</option>
+			</select>
+		</div>
+		<div class="alerta" *ngIf="CaixaForm.controls['tipoVinho'].hasError('required') && CaixaForm.controls['tipoVinho'].touched">
+			Tipo de Vinho obrigatório
+		</div>
+		<br>
+		<div class="alerta" *ngIf="!CaixaForm.controls['capacidade'].hasError('required') &&  !CaixaForm.controls['material'].hasError('required') && !CaixaForm.controls['garrafas'].hasError('required') && !CaixaForm.controls['tipoVinho'].hasError('required') && CaixaForm.hasError('ValidatorModelo')">
+			O modelo que inseriu já existe ou encontra-se inalterado
+		</div>
+		<br>	
+		<div class="registo-btn">
+			<button type="submit" name="button" class="btn" [disabled]="!CaixaForm.valid">Editar Modelo</button>
+			<a class="btn" (click)="clearDados()">Limpar</a>
+		</div>
+		<br>
+	</form>
+</div>

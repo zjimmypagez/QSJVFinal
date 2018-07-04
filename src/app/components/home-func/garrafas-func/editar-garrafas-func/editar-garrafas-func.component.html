@@ -1,0 +1,45 @@
+<div class="container">
+    <h1 class="itemTitulo">Editar Registo - Garrafas</h1>
+    <h4>Dados do Registo</h4>
+    <div class="main-table" *ngIf="registo && garrafa">
+      <table>
+         <tr>
+            <th>LOTE</th>
+            <th>TIPO DE VINHO</th>
+            <th>CAPACIDADE(/L)</th>
+            <th>DATA</th>
+            <th>OPERAÇÃO</th>
+            <th>C/RÓTULO</th>
+            <th>S/RÓTULO</th>
+         </tr>
+         <tr>
+            <td>{{garrafa.Marca}}-{{garrafa.Ano}}{{garrafa.Pipa != null ? '-' + garrafa.Pipa : ''}}</td>
+            <td>{{garrafa.Tipo}} {{garrafa.Categoria != "" ? ' - ' + garrafa.Categoria : ''}}</td>
+            <td>{{garrafa.Capacidade}}l</td>
+            <td>{{registo.Data.slice(0, 19).replace('T', ' ')}}</td>
+            <td>{{opcao}}</td>
+            <td>{{registo.QTCRotulo}}</td>
+            <td>{{registo.QTSRotulo}}</td>
+         </tr>
+      </table>
+   </div>
+   <br>
+    <form class="itemForm" [formGroup]="RegistoForm" (ngSubmit)="editarRegisto(RegistoForm.value)">      
+      <div class="main-registo">
+        <h4>Comentário</h4>
+        <input type="text" formControlName="comentario" placeholder="Insira aqui um comentário acerca do registo (opcional)...">
+      </div>
+      <div class="alerta" *ngIf="RegistoForm.controls['comentario'].hasError('ComentarioInalterado') && RegistoForm.controls['comentario'].touched">
+        Comentário Inalterado
+      </div>
+      <div class="alerta" *ngIf="!RegistoForm.controls['comentario'].hasError('ComentarioInalterado') && RegistoForm.controls['comentario'].hasError('maxlength') && RegistoForm.controls['comentario'].touched">
+        Máx. 200 Caracteres
+      </div>
+      <br>      
+      <div class="registo-btn">
+        <button type="submit" name="button" class="btn" [disabled]="!RegistoForm.valid">Editar</button>
+        <a class="btn" (click)="clearDados()">Limpar</a>
+      </div>
+      <br>
+    </form>
+  </div>
